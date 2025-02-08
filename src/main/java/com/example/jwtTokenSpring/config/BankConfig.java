@@ -21,7 +21,8 @@ public class BankConfig {
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
         //http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-        http.requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
+        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
+                .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 .csrf(c -> c.disable()).authorizeHttpRequests((request) -> request
                 .requestMatchers("/myAccount","/myCards","/myBalance","/myLoan").authenticated()
                 .requestMatchers("/myNotice","/myContact","/api/createUser").permitAll());
