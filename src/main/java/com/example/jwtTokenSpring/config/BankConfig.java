@@ -1,6 +1,7 @@
 package com.example.jwtTokenSpring.config;
 
 import com.example.jwtTokenSpring.exceptionHandling.CustomBasicAuthenticationEntryPoint;
+import com.example.jwtTokenSpring.exceptionHandling.CustomerAccessDeniedExceptionHandling;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
@@ -27,6 +28,7 @@ public class BankConfig {
         http.formLogin(withDefaults());
         //http.httpBasic(withDefaults());
         http.httpBasic(hsbc -> hsbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
+        http.exceptionHandling(hse -> hse.accessDeniedHandler(new CustomerAccessDeniedExceptionHandling()));
         return http.build();
     }
 
