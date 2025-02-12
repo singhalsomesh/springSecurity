@@ -29,6 +29,6 @@ public class BankUserDetailService implements UserDetailsService {
                 .orElseThrow(() -> new UsernameNotFoundException("User not found with email: " + username));
 
         List<GrantedAuthority> authorities = List.of(new SimpleGrantedAuthority(customer.getRole()));
-        return User.withUsername(customer.getEmail()).password(customer.getPassword()).authorities(authorities).build();
+        return User.withUsername(customer.getEmail()).password(customer.getPwd()).authorities(authorities).build();
     }
 }

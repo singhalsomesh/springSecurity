@@ -1,13 +1,26 @@
 package com.example.jwtTokenSpring.entity;
 
+
 public class CustomerDTO {
+    private String name;
+
     private String email;
 
-    private String password;
+    private String mobileNumber;
+
+    private String pwd;
 
     private String role;
 
     public CustomerDTO() {
+    }
+
+    public String getName() {
+        return name;
+    }
+
+    public void setName(String name) {
+        this.name = name;
     }
 
     public String getEmail() {
@@ -18,12 +31,20 @@ public class CustomerDTO {
         this.email = email;
     }
 
-    public String getPassword() {
-        return password;
+    public String getMobileNumber() {
+        return mobileNumber;
     }
 
-    public void setPassword(String password) {
-        this.password = password;
+    public void setMobileNumber(String mobileNumber) {
+        this.mobileNumber = mobileNumber;
+    }
+
+    public String getPwd() {
+        return pwd;
+    }
+
+    public void setPwd(String pwd) {
+        this.pwd = pwd;
     }
 
     public String getRole() {
@@ -37,8 +58,10 @@ public class CustomerDTO {
     @Override
     public String toString() {
         return "CustomerDTO{" +
-                "email='" + email + '\'' +
-                ", password='" + password + '\'' +
+                "name='" + name + '\'' +
+                ", email='" + email + '\'' +
+                ", mobileNumber='" + mobileNumber + '\'' +
+                ", pwd='" + pwd + '\'' +
                 ", role='" + role + '\'' +
                 '}';
     }

@@ -8,6 +8,8 @@ import org.springframework.beans.BeanUtils;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
+import java.util.Date;
+
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
 
@@ -24,8 +26,9 @@ public class UserManagerServiceImpl implements UserManagerService {
     public Customer createUser(CustomerDTO customerDTO) {
         Customer customer = new Customer();
         BeanUtils.copyProperties(customerDTO,customer);
-        String hashPwd = passwordEncoder.encode(customerDTO.getPassword());
-        customer.setPassword(hashPwd);
+        String hashPwd = passwordEncoder.encode(customerDTO.getPwd());
+        customer.setPwd(hashPwd);
+        customer.setCreateDt(new Date());
         customerRepository.save(customer);
         return customer;
     }

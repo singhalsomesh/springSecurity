@@ -1,14 +1,31 @@
 package com.example.jwtTokenSpring.controller;
 
+import com.example.jwtTokenSpring.entity.AccountTransactions;
+import com.example.jwtTokenSpring.repository.AccountTransactionsRepository;
 import org.springframework.web.bind.annotation.GetMapping;
+import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
+
+import java.util.List;
 
 @RestController
 public class BalanceController {
 
+    private final AccountTransactionsRepository accountTransactionsRepository;
+
+    public BalanceController(AccountTransactionsRepository accountTransactionsRepository) {
+        this.accountTransactionsRepository = accountTransactionsRepository;
+    }
+
     @GetMapping("/myBalance")
-    public String myBalance(){
-        return "Welcome to the balance controller";
+    public List<AccountTransactions> getBalanceDetails(@RequestParam long id) {
+        List<AccountTransactions> accountTransactions = accountTransactionsRepository.
+                findByCustomerIdOrderByTransactionDtDesc(id);
+        if (accountTransactions != null) {
+            return accountTransactions;
+        } else {
+            return null;
+        }
     }
 
 }
