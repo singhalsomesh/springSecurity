@@ -5,6 +5,7 @@ import com.fasterxml.jackson.annotation.JsonProperty;
 import jakarta.persistence.*;
 
 import java.util.Date;
+import java.util.Set;
 
 @Entity
 @Table(name = "customer")
@@ -29,6 +30,9 @@ public class Customer {
     @Column(name = "create_dt")
     @JsonIgnore
     private Date createDt;
+
+    @OneToMany(mappedBy = "customer", fetch = FetchType.EAGER)
+    private Set<Authority> authorities;
 
     public Customer() {
     }
@@ -89,6 +93,14 @@ public class Customer {
         this.createDt = createDt;
     }
 
+    public Set<Authority> getAuthorities() {
+        return authorities;
+    }
+
+    public void setAuthorities(Set<Authority> authorities) {
+        this.authorities = authorities;
+    }
+
     @Override
     public String toString() {
         return "Customer{" +
@@ -99,6 +111,7 @@ public class Customer {
                 ", pwd='" + pwd + '\'' +
                 ", role='" + role + '\'' +
                 ", createDt=" + createDt +
+                ", authorities=" + authorities +
                 '}';
     }
 }
