@@ -5,10 +5,12 @@ import com.example.jwtTokenSpring.entity.CustomerDTO;
 import com.example.jwtTokenSpring.repository.CustomerRepository;
 import com.example.jwtTokenSpring.service.UserManagerService;
 import org.springframework.beans.BeanUtils;
+import org.springframework.security.core.Authentication;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.stereotype.Service;
 
 import java.util.Date;
+import java.util.Optional;
 
 @Service
 public class UserManagerServiceImpl implements UserManagerService {
@@ -31,5 +33,10 @@ public class UserManagerServiceImpl implements UserManagerService {
         customer.setCreateDt(new Date());
         customerRepository.save(customer);
         return customer;
+    }
+
+    @Override
+    public Optional<Customer> findUsers(Authentication authentication) {
+        return customerRepository.findByEmail(authentication.getName());
     }
 }

@@ -8,9 +8,10 @@ import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.HttpStatusCode;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.PostMapping;
-import org.springframework.web.bind.annotation.RequestBody;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.security.core.Authentication;
+import org.springframework.web.bind.annotation.*;
+
+import java.util.Optional;
 
 @RestController
 public class UserController {
@@ -26,6 +27,12 @@ public class UserController {
         Customer createdCustomer = userManagerService.createUser(customerDTO);
         ResponseDTO<Customer> response = new ResponseDTO<>("success", "User created successfully", createdCustomer);
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
+    }
+
+    @GetMapping("/api/user")
+    public ResponseEntity<?> getUserDetailsAfterLogin(Authentication authentication) {
+        Optional<Customer> optionalCustomer = userManagerService.findUsers(authentication);
+        return new ResponseEntity<>(optionalCustomer, HttpStatus.OK);
     }
 
 }

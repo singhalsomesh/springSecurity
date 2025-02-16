@@ -2,16 +2,21 @@ package com.example.jwtTokenSpring.config;
 
 import com.example.jwtTokenSpring.exceptionHandling.CustomBasicAuthenticationEntryPoint;
 import com.example.jwtTokenSpring.exceptionHandling.CustomerAccessDeniedExceptionHandling;
+import com.example.jwtTokenSpring.filter.CsrfCookieFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
+import org.springframework.security.config.http.SessionCreationPolicy;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
 import org.springframework.security.web.authentication.password.HaveIBeenPwnedRestApiPasswordChecker;
+import org.springframework.security.web.authentication.www.BasicAuthenticationFilter;
+import org.springframework.security.web.csrf.CookieCsrfTokenRepository;
+import org.springframework.security.web.csrf.CsrfTokenRequestAttributeHandler;
 import org.springframework.web.cors.CorsConfiguration;
 import org.springframework.web.cors.CorsConfigurationSource;
 
@@ -26,6 +31,9 @@ public class BankConfig {
 
     @Bean
     SecurityFilterChain defaultSecurityFilterChain(HttpSecurity http) throws Exception {
+
+        CsrfTokenRequestAttributeHandler csrfTokenRequestAttributeHandler = new CsrfTokenRequestAttributeHandler();
+
         http.cors(corsCustomizer -> corsCustomizer.configurationSource(new CorsConfigurationSource() {
             @Override
             public CorsConfiguration getCorsConfiguration(HttpServletRequest request) {
@@ -40,10 +48,17 @@ public class BankConfig {
         }));
 
         //http.authorizeHttpRequests((requests) -> requests.anyRequest().authenticated());
-        http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
+       // http.sessionManagement(smc -> smc.invalidSessionUrl("/invalidSession").maximumSessions(3).maxSessionsPreventsLogin(true))
+
+                http.securityContext(contextCofig -> contextCofig.requireExplicitSave(false))
+                        .sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.ALWAYS))
+                        .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
+                                .ignoringRequestMatchers("/myNotice","/myContact","/api/createUser")
+                                .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
+                        .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
-                .csrf(c -> c.disable()).authorizeHttpRequests((request) -> request
-                .requestMatchers("/myAccount","/myCards","/myBalance","/myLoan").authenticated()
+                 .authorizeHttpRequests((request) -> request
+                .requestMatchers("/myAccount","/myCards","/myBalance","/myLoan","/api/user").authenticated()
                 .requestMatchers("/myNotice","/myContact","/api/createUser").permitAll());
         http.formLogin(withDefaults());
         //http.httpBasic(withDefaults());
