@@ -2,7 +2,9 @@ package com.example.jwtTokenSpring.config;
 
 import com.example.jwtTokenSpring.exceptionHandling.CustomBasicAuthenticationEntryPoint;
 import com.example.jwtTokenSpring.exceptionHandling.CustomerAccessDeniedExceptionHandling;
+import com.example.jwtTokenSpring.filter.AuthenticationLoginFilter;
 import com.example.jwtTokenSpring.filter.CsrfCookieFilter;
+import com.example.jwtTokenSpring.filter.RequestValidationFilter;
 import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
@@ -56,9 +58,15 @@ public class BankConfig {
                                 .ignoringRequestMatchers("/myNotice","/myContact","/api/createUser")
                                 .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                         .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
+                        .addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
+                        .addFilterAfter(new AuthenticationLoginFilter(), BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                  .authorizeHttpRequests((request) -> request
-                .requestMatchers("/myAccount","/myCards","/myBalance","/myLoan","/api/user").authenticated()
+                .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")
+                .requestMatchers("/myCards").hasAuthority("VIEWCARDS")
+                .requestMatchers("/myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
+                .requestMatchers("/myLoan").hasAuthority("VIEWLOAN")
+                .requestMatchers("/api/user").authenticated()
                 .requestMatchers("/myNotice","/myContact","/api/createUser").permitAll());
         http.formLogin(withDefaults());
         //http.httpBasic(withDefaults());

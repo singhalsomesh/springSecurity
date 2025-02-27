@@ -3,7 +3,7 @@ package com.example.jwtTokenSpring.entity;
 import jakarta.persistence.*;
 
 @Entity
-@Table(name = "authority")
+@Table(name = "authorities")
 public class Authority {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
