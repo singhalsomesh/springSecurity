@@ -51,10 +51,10 @@ public class JwtConfig {
                         .ignoringRequestMatchers("/myNotice","/myContact","/api/createUser")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
+               // .addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
+                .addFilterBefore(new JwtTokenValidatorFilter() , BasicAuthenticationFilter.class)
                 .addFilterAfter(new AuthenticationLoginFilter(), BasicAuthenticationFilter.class)
                 .addFilterAfter(new JwtTokenGenerationFilter(), BasicAuthenticationFilter.class)
-                .addFilterBefore(new JwtTokenValidatorFilter() , BasicAuthenticationFilter.class)
                 .requiresChannel(rcc -> rcc.anyRequest().requiresInsecure())
                 .authorizeHttpRequests((request) -> request
                         .requestMatchers("/myAccount").hasAuthority("VIEWACCOUNT")

@@ -43,10 +43,8 @@ public class RequestValidationFilter implements Filter {
                     throw new BadRequestException("Failed to decode basic authentication token");
                 }
                 filterChain.doFilter(servletRequest, servletResponse);
-                return;
             }
             httpServletResponse.setStatus(HttpServletResponse.SC_UNAUTHORIZED);
-            return;
         }
     }
 }

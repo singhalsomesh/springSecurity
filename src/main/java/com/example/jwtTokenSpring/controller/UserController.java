@@ -29,7 +29,7 @@ public class UserController {
         return new ResponseEntity<>(response, HttpStatus.ACCEPTED);
     }
 
-    @GetMapping("/api/user")
+    @RequestMapping("/api/user")
     public ResponseEntity<?> getUserDetailsAfterLogin(Authentication authentication) {
         Optional<Customer> optionalCustomer = userManagerService.findUsers(authentication);
         return new ResponseEntity<>(optionalCustomer, HttpStatus.OK);
