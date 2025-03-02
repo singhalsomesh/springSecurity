@@ -1,5 +1,7 @@
 package com.example.jwtTokenSpring.controller;
 
+import com.example.jwtTokenSpring.dto.LoginRequestDTO;
+import com.example.jwtTokenSpring.dto.LoginResponseDto;
 import com.example.jwtTokenSpring.entity.Customer;
 import com.example.jwtTokenSpring.entity.CustomerDTO;
 import com.example.jwtTokenSpring.service.UserManagerService;
@@ -33,6 +35,16 @@ public class UserController {
     public ResponseEntity<?> getUserDetailsAfterLogin(Authentication authentication) {
         Optional<Customer> optionalCustomer = userManagerService.findUsers(authentication);
         return new ResponseEntity<>(optionalCustomer, HttpStatus.OK);
+    }
+
+    @PostMapping("/api/createToken")
+    ResponseEntity<LoginResponseDto> getToken(@RequestBody LoginRequestDTO loginRequestDTO){
+        return new ResponseEntity<>(userManagerService.createToken(loginRequestDTO), HttpStatus.OK);
+    }
+
+    @PostMapping("/api/refreshToken")
+    public ResponseEntity<LoginResponseDto> refreshToken(@RequestParam String refreshToken) {
+        return new ResponseEntity<>(userManagerService.refreshToken(refreshToken), HttpStatus.OK);
     }
 
 }

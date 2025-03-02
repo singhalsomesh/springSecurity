@@ -7,9 +7,13 @@ import jakarta.servlet.http.HttpServletRequest;
 import org.springframework.context.annotation.Bean;
 import org.springframework.context.annotation.Configuration;
 import org.springframework.context.annotation.Profile;
+import org.springframework.security.authentication.AuthenticationManager;
+import org.springframework.security.authentication.AuthenticationProvider;
+import org.springframework.security.authentication.ProviderManager;
 import org.springframework.security.authentication.password.CompromisedPasswordChecker;
 import org.springframework.security.config.annotation.web.builders.HttpSecurity;
 import org.springframework.security.config.http.SessionCreationPolicy;
+import org.springframework.security.core.userdetails.UserDetailsService;
 import org.springframework.security.crypto.factory.PasswordEncoderFactories;
 import org.springframework.security.crypto.password.PasswordEncoder;
 import org.springframework.security.web.SecurityFilterChain;
@@ -48,7 +52,7 @@ public class JwtConfig {
 
         http.sessionManagement(sessionConfig -> sessionConfig.sessionCreationPolicy(SessionCreationPolicy.STATELESS))
                 .csrf(csrfConfig -> csrfConfig.csrfTokenRequestHandler(csrfTokenRequestAttributeHandler)
-                        .ignoringRequestMatchers("/myNotice","/myContact","/api/createUser")
+                        .ignoringRequestMatchers("/myNotice","/myContact","/api/createUser","/api/createToken","/api/refreshToken")
                         .csrfTokenRepository(CookieCsrfTokenRepository.withHttpOnlyFalse()))
                 .addFilterAfter(new CsrfCookieFilter(), BasicAuthenticationFilter.class)
                // .addFilterBefore(new RequestValidationFilter(), BasicAuthenticationFilter.class)
@@ -62,7 +66,7 @@ public class JwtConfig {
                         .requestMatchers("/myBalance").hasAnyAuthority("VIEWBALANCE","VIEWACCOUNT")
                         .requestMatchers("/myLoan").hasAuthority("VIEWLOAN")
                         .requestMatchers("/api/user").authenticated()
-                        .requestMatchers("/myNotice","/myContact","/api/createUser").permitAll());
+                        .requestMatchers("/myNotice","/myContact","/api/createUser","/api/createToken","/api/refreshToken").permitAll());
         http.formLogin(withDefaults());
         http.httpBasic(hsbc -> hsbc.authenticationEntryPoint(new CustomBasicAuthenticationEntryPoint()));
         http.exceptionHandling(hse -> hse.accessDeniedHandler(new CustomerAccessDeniedExceptionHandling()));
@@ -77,6 +81,17 @@ public class JwtConfig {
     @Bean
     public CompromisedPasswordChecker compromisedPasswordChecker(){
         return new HaveIBeenPwnedRestApiPasswordChecker();
+    }
+
+    @Bean
+    public AuthenticationManager authenticationManager(UserDetailsService userDetailsService
+    , PasswordEncoder passwordEncoder){
+        CustomerAuthenticationProvider customerAuthenticationProvider = new
+                CustomerAuthenticationProvider(userDetailsService,passwordEncoder);
+        ProviderManager providerManager =
+                new ProviderManager(customerAuthenticationProvider);
+        providerManager.setEraseCredentialsAfterAuthentication(false);
+        return providerManager;
     }
 
 }
